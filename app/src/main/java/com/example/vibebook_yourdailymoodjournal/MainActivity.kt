@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MoodList(
                         "Mood List Screen", Modifier.padding(innerPadding)
+                        //Github Test Commit
                     )
                 }
             }
