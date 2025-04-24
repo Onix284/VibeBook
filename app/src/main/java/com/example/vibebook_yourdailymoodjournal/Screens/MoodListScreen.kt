@@ -15,9 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
 
 @Composable
-fun MoodList(navController: NavController){
+fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate("AddMood") }) {

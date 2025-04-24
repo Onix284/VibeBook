@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface MoodDao {
@@ -17,5 +18,5 @@ interface MoodDao {
     suspend fun deleteMood(moodEntry: MoodEntry)
 
     @Query("SELECT * FROM mood_entries")
-    fun getAllMood() : Flow<List<MoodEntry>>
+    fun getAllMood() : List<MoodEntry>
 }

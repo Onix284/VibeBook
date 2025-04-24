@@ -2,11 +2,13 @@ import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.
 import org.gradle.kotlin.dsl.implementation
 
 plugins {
+
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    id("com.google.devtools.ksp") version "2.1.10-1.0.29"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -42,8 +44,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-
 }
 
 dependencies {
@@ -70,6 +70,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.bundles.room)
+    implementation(libs.androidx.room.runtime)
 
+}
+
+
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
