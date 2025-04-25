@@ -18,5 +18,5 @@ interface MoodDao {
     suspend fun deleteMood(moodEntry: MoodEntry)
 
     @Query("SELECT * FROM mood_entries")
-    fun getAllMood() : List<MoodEntry>
+    suspend fun getAllMood() : List<MoodEntry>
 }

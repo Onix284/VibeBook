@@ -1,4 +1,3 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 import org.gradle.kotlin.dsl.implementation
 
 plugins {
@@ -7,8 +6,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.ksp)
+
 }
 
 android {
@@ -46,7 +46,9 @@ android {
     }
 }
 
+
 dependencies {
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -60,6 +62,7 @@ dependencies {
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.support.annotations)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -70,13 +73,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.bundles.room)
-    implementation(libs.androidx.room.runtime)
-
+    ksp(libs.androidx.room.compiler)
+    implementation("androidx.compose.material3:material3:1.3.2")
 }
-
-
 
 room {
-    schemaDirectory("$projectDir/schemas")
+    schemaDirectory("$projectDir/schemas/")
 }
-

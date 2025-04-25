@@ -18,6 +18,13 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
         loadMoodEntries()
     }
 
+    fun addMoodEntry(entry: MoodEntry){
+        viewModelScope.launch {
+            moodDao.insertMood(entry)
+            loadMoodEntries()
+        }
+    }
+
     //Load the Mood Entries With the database
     private fun loadMoodEntries(){
         viewModelScope.launch {

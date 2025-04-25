@@ -2,6 +2,7 @@ package com.example.vibebook_yourdailymoodjournal.Data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 import java.util.UUID
 
 @Entity(tableName = "mood_entries")
