@@ -1,4 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=
 * linguist-vendored
-*.kt linguist-vendored=false
+*.kt linguist-vendored=true
