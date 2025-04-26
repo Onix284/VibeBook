@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [MoodEntry::class], version = 1, exportSchema = false)
+@Database(entities = [MoodEntry::class], version = 2, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class MoodDatabase : RoomDatabase(){
 
     abstract fun moodDao() : MoodDao
@@ -20,7 +22,9 @@ abstract class MoodDatabase : RoomDatabase(){
                 context.applicationContext,
                 MoodDatabase::class.java,
                 "mood_database"
-            ).build()
+            )
+                .fallbackToDestructiveMigration(true)
+                .build()
             INSTANCE = instance
             instance
         }

@@ -2,15 +2,15 @@ package com.example.vibebook_yourdailymoodjournal.Data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
-import java.util.UUID
+
+
 
 @Entity(tableName = "mood_entries")
 data class MoodEntry(
-    @PrimaryKey  val id : String = UUID.randomUUID().toString(),
-    val mood : MoodEmoji,
-    val note : String,
-    val timeStamp : Long = System.currentTimeMillis()
+    @PrimaryKey(autoGenerate = true) val id : Int = 0,
+    val mood : MoodEmoji?,
+    val note : String?,
+    val dateTime : String?
 )
 
 enum class MoodEmoji(val emoji : String){
@@ -20,3 +20,4 @@ enum class MoodEmoji(val emoji : String){
     BAD("🙁"),
     AWFUL("😢")
 }
+
