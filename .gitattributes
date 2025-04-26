@@ -1,4 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=
-*.html linguist = false
-*.kotlin linguist = true
+* linguist-vendored
+*.kt linguist-vendored=false
