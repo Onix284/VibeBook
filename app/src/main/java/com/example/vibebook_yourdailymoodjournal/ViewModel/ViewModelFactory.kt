@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDao
 
+//Viewmodel Factory
 class ViewModelFactory(
     private val dao: MoodDao
 ) : ViewModelProvider.Factory {
