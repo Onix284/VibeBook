@@ -2,7 +2,6 @@
 
 package com.example.vibebook_yourdailymoodjournal.Screens
 
-import android.R.attr.font
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -67,14 +66,9 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
 
     var description by remember { mutableStateOf("") } //Note For Mood
     var selectedMood by remember { mutableStateOf<MoodEmoji?>(null) } //Select Mood Emoji
-    listOf("😊", "😐", "😞", "😡", "😭") //List of Emoji
-
 
     var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }
     var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) }
-
-
-
 
     //Add Mood Screen
     Column(modifier = Modifier.fillMaxSize()){

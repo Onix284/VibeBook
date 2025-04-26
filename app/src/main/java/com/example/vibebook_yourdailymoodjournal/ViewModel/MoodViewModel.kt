@@ -25,6 +25,13 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
         }
     }
 
+    fun deleteMood(entry: MoodEntry){
+        viewModelScope.launch {
+            moodDao.deleteMood(entry)
+            loadMoodEntries()
+        }
+    }
+
     //Load the Mood Entries With the database
     private fun loadMoodEntries(){
         viewModelScope.launch {
