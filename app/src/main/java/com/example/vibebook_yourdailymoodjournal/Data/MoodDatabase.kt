@@ -10,12 +10,14 @@ import androidx.room.TypeConverters
 @TypeConverters(Converters::class)
 abstract class MoodDatabase : RoomDatabase(){
 
+
     abstract fun moodDao() : MoodDao
 
     companion object{
     @Volatile
     private var INSTANCE : MoodDatabase? = null
 
+        //Creating Database
     fun getDatabase(context: Context) : MoodDatabase {
         return INSTANCE ?: synchronized(this) {
             val instance = Room.databaseBuilder(

@@ -1,6 +1,7 @@
 package com.example.vibebook_yourdailymoodjournal.Screens
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -23,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
@@ -31,27 +30,73 @@ import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
 
 @Composable
 fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
-    val moodEntries by moodViewModel.moodEntries.collectAsState()
+
+    val moodEntries by moodViewModel.moodEntries.collectAsState() //Public moodEntries variable from ViewModel
+
+    //Group Mood Entries According to date int descending order
+    val groupedMoods = moodEntries
+                        .sortedByDescending { it.dateTime }
+                        .groupBy { it.dateTime?.substringBefore('T') } //substring before T will only include Date removes Time
+
     Scaffold(
+        //Add New Mood Button
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate("AddMood") },
                 modifier = Modifier.padding(vertical = 30.dp)) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.Center //Floating Action Button Position
     ) {
-        // Main content of the screen
+
+        // Main content of the screen (List Of Moods)
         LazyColumn(modifier = Modifier.padding(it)) {
-            items(moodEntries) { moodEntry ->
-                MoodEntryItem(myMoodEntry = moodEntry,
-                            onDeleteClick = {moodViewModel.deleteMood(it)})
+            //Getting every value of group of moods, grouped by date
+            groupedMoods.forEach{ (date, moods) ->
+                item{
+                    Card(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 15.dp)
+                    ){
+                        Column(modifier = Modifier.padding(16.dp))
+                        {
+                            //Reverse Date Format
+                            val formattedDate = date.let {
+                                val parts = it?.split("-")
+                                if(parts?.size==3){
+                                    "${parts[2]}-${parts[1]}-${parts[0]}"
+                                }
+                                else
+                                {
+                                    it
+                                }
+                            }
+                            //Header Date
+                            Text(
+                                text = formattedDate.toString(),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            //Passing the mood data to MoodEntryItem Function
+                            moods.forEach {
+                                moodEntry ->
+                                MoodEntryItem(
+                                    myMoodEntry = moodEntry,
+                                    onDeleteClick = {moodViewModel.deleteMood(moodEntry)}
+                                )
+                            }
+
+                        }
+                    }
+                }
             }
+
         }
     }
 
 }
 
+//Shows the data of mood
 @Composable
 fun MoodEntryItem(myMoodEntry: MoodEntry, onDeleteClick : (MoodEntry) -> Unit ) {
     Card(
@@ -63,13 +108,14 @@ fun MoodEntryItem(myMoodEntry: MoodEntry, onDeleteClick : (MoodEntry) -> Unit ) 
             Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                 Row {
                     Column {
-                        Text("Mood: ${myMoodEntry.mood?.name}")
-                        Text("Description ${myMoodEntry.note}")
-                        Text("Date: ${myMoodEntry.dateTime}")
+                        Text("Mood: ${myMoodEntry.mood?.name}") //Mood Name
+                        Text("Time: ${myMoodEntry.dateTime?.substringAfter('T')}") //Mood Time
+                        Text("${myMoodEntry.mood?.emoji}") //Mood Emoji
                     }
 
                 }
             }
+            //Delete Mood Button
             Icon(
                 Icons.Default.Delete,
                 contentDescription = "Delete button",

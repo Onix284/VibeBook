@@ -59,7 +59,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-
+//Add New Mood Screen
 @SuppressLint("NewApi")
 @Composable
 fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
@@ -67,8 +67,8 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
     var description by remember { mutableStateOf("") } //Note For Mood
     var selectedMood by remember { mutableStateOf<MoodEmoji?>(null) } //Select Mood Emoji
 
-    var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }
-    var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) }
+    var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }//Selected Date
+    var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) } // Selected Time
 
     //Add Mood Screen
     Column(modifier = Modifier.fillMaxSize()){
@@ -98,6 +98,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                 fontSize = 25.sp)
         }
 
+        //DateTimePicker Function Calling
         DateTimePickerSection(
             selectedDate = selectedDate,
             selectedTime = selectedTime,
@@ -108,7 +109,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
         //Body
         Box (modifier = Modifier.fillMaxSize()){
 
-            //Emoji Selection
+            //Emoji Selection Row
             MoodSelector(selectedMood,
                 onMoodSelected = {mood -> selectedMood = mood},
                 description = description,
@@ -120,13 +121,9 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
             FloatingActionButton(onClick = {
                 if(selectedMood != null && description.isNotBlank()){
 
-                    // Combine Date and Time
-                    val combinedDateTime = if (selectedDate != null && selectedTime != null) {
-                        LocalDateTime.of(selectedDate, selectedTime)
-                    } else {
-                        // Use the current date and time if either is missing
-                        LocalDateTime.now()
-                    }
+                    val finalDate = selectedDate ?: LocalDate.now()
+                    val finalTime = selectedTime ?: LocalTime.MIDNIGHT
+                    val combinedDateTime = LocalDateTime.of(finalDate, finalTime)
                         val newMoodEntry = MoodEntry(
                             id = 0,
                             mood = selectedMood,
@@ -134,7 +131,6 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                             dateTime = combinedDateTime.toString()
                         )
                         moodViewModel.addMoodEntry(newMoodEntry)
-
                 }
                 navController.navigate("MoodList")},
                 modifier = Modifier.align(alignment = Alignment.BottomCenter)
@@ -253,12 +249,13 @@ fun DateTimePickerSection(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ){
+        //Date Selector Button
         Button(onClick = {
             val today = LocalDate.now()
             DatePickerDialog(
                 context,
-                { _, year, month, dayOfMonth ->
-                    val pickedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                { _, dayOfMonth, month, year ->
+                    val pickedDate = LocalDate.of(dayOfMonth, month + 1, year)
                     onDateSelected(pickedDate)
                 },
                 today.year,
@@ -270,6 +267,8 @@ fun DateTimePickerSection(
                 text = selectedDate?.toString() ?: "Select Date"
             )
         }
+
+        //Time Selector Button
         Button(onClick = {
             val now = LocalTime.now()
             TimePickerDialog(
