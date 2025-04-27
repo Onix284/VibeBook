@@ -1,6 +1,11 @@
 package com.example.vibebook_yourdailymoodjournal
 
+import android.app.Activity
+import android.app.ComponentCaller
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +16,9 @@ import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
+import com.github.dhaval2404.imagepicker.ImagePicker
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
 
 
@@ -24,14 +31,18 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             NavHost(navController, startDestination = "MoodList", builder = {
-                composable("MoodList" ) {
+                composable("MoodList") {
                     MoodList(navController, moodViewModel = moodViewModel)
                 }
-                composable("AddMood" ) {
+                composable("AddMood") {
                     AddMoods(navController, moodViewModel = moodViewModel)
                 }
             })
         }
+
     }
+
+
+
 }
 
