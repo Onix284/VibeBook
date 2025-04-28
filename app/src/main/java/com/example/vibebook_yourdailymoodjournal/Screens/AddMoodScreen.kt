@@ -4,15 +4,17 @@
 package com.example.vibebook_yourdailymoodjournal.Screens
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
+import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.widget.Toast
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +30,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +53,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,13 +71,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
-import com.github.dhaval2404.imagepicker.ImagePicker
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.math.ceil
 
 //Add New Mood Screen
 @SuppressLint("NewApi")
@@ -183,6 +190,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
     //For Enabling and disabling shadow of text field
     var isFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    var imageUri = remember { mutableStateListOf<Uri?>() }
 
     Box(
         modifier = Modifier
@@ -267,13 +275,43 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 )
             )
 
-            /*
+
             //Upload Photos
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 30.dp)
             ) {
+                val context = LocalContext.current
+
+
+                //Gallery Launcher
+                val galleryLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+                    onResult = {uri ->
+                        uri.let {
+                            if (imageUri.size < 4){
+                                imageUri.addAll(it)
+                            }
+                        }
+                    }
+                )
+
+                //Camera Launcher
+                val cameraLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.TakePicture(),
+                    onResult = { success ->
+                        if(success){
+                            val uri = imageUri.lastOrNull()
+                            uri?.let {
+                                if (imageUri.size < 4){
+                                    imageUri.add(it)
+                                }
+                            }
+                        }
+
+                    }
+                )
 
                 Column {
                     Text(
@@ -294,7 +332,11 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         //Camera Button Card
                             Card(
                                 modifier = Modifier.clickable(onClick = {
-
+                                    val uri = createImageUri(context)
+                                    uri?.let {
+                                        imageUri.add(it)
+                                        cameraLauncher.launch(uri)
+                                    }
                                 }),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
@@ -326,8 +368,10 @@ fun MoodSelector(selectedMood : MoodEmoji?,
 
                             //Upload From Gallery Card
                             Card(
-                                modifier = Modifier.clickable { }.weight(1f),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                                modifier = Modifier.clickable(onClick = {
+                                    galleryLauncher.launch(PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly))
+                                }),
                             ) {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -353,11 +397,26 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         }
                     }
                 }
-
-             */
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)){
+                LazyVerticalGrid(
+                    GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    items(imageUri.size){
+                            index ->
+                        val  uri = imageUri[index]
+                        uri?.let {
+                            ShowImageFromGallery(uri)
+                        }
+                    }
+                }
             }
+
         }
     }
+}
+
 
 //Date Time Picker
 @RequiresApi(Build.VERSION_CODES.O)
@@ -445,4 +504,27 @@ fun DateTimePickerSection(
         }
 
     }
+}
+
+fun createImageUri(context: Context) : Uri? {
+    val contetResolver = context.contentResolver
+
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MyApp")
+    }
+
+    return contetResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+}
+
+
+@Composable fun ShowImageFromGallery(uri: Uri?){
+        Box (modifier = Modifier.fillMaxWidth().padding(10.dp)){
+
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Uploaded From Gallery",
+                )
+        }
 }
