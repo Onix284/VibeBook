@@ -30,9 +30,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,10 +72,10 @@ import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
+import com.shashank.sony.fancytoastlib.FancyToast
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import kotlin.math.ceil
 
 //Add New Mood Screen
 @SuppressLint("NewApi")
@@ -287,11 +284,21 @@ fun MoodSelector(selectedMood : MoodEmoji?,
 
                 //Gallery Launcher
                 val galleryLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+                    contract = ActivityResultContracts.PickMultipleVisualMedia(4),
                     onResult = {uri ->
                         uri.let {
-                            if (imageUri.size < 4){
-                                imageUri.addAll(it)
+                            val availableSlots = 4 - imageUri.size
+                            if(availableSlots >0 ){
+                                val imagesToAdd = it.take(availableSlots)
+                                imageUri.addAll(imagesToAdd)
+
+                                if (imageUri.size >availableSlots){
+                                    FancyToast.makeText(context,"You Can Add Only Upto 4 Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
+                                }
+                            }
+                            else
+                            {
+                                FancyToast.makeText(context,"You Already Added Five Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                             }
                         }
                     }
@@ -307,12 +314,19 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                 if (imageUri.size < 4){
                                     imageUri.add(it)
                                 }
+                                else{
+                                    FancyToast.makeText(
+                                        context, "You Can Add Only Upto 4 Images",
+                                        FancyToast.LENGTH_SHORT,
+                                        FancyToast.WARNING, true).show()
+                                }
                             }
                         }
 
                     }
                 )
 
+                //Header Text
                 Column {
                     Text(
                         text = "Photos",
@@ -329,7 +343,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
 
-                        //Camera Button Card
+                        //Upload From Camera Card
                             Card(
                                 modifier = Modifier.clickable(onClick = {
                                     val uri = createImageUri(context)
@@ -397,22 +411,18 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         }
                     }
                 }
-            Box(modifier = Modifier.fillMaxWidth().weight(1f)){
-                LazyVerticalGrid(
-                    GridCells.Fixed(2),
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = 10.dp)
-                ) {
-                    items(imageUri.size){
-                            index ->
-                        val  uri = imageUri[index]
-                        uri?.let {
-                            ShowImageFromGallery(uri)
+          Column {
+                imageUri.forEach {
+                        image ->
+                    image?.let {
+                        Row {
+                            ShowImageFromGallery(image)
                         }
                     }
                 }
             }
 
+            Text("Voice Note")
         }
     }
 }
@@ -520,11 +530,14 @@ fun createImageUri(context: Context) : Uri? {
 
 
 @Composable fun ShowImageFromGallery(uri: Uri?){
-        Box (modifier = Modifier.fillMaxWidth().padding(10.dp)){
-
+        Box (modifier = Modifier.fillMaxWidth()
+            .padding(10.dp)
+            .size(130.dp)
+            .clip(RoundedCornerShape(10.dp))){
                 AsyncImage(
                     model = uri,
                     contentDescription = "Uploaded From Gallery",
                 )
+
         }
 }

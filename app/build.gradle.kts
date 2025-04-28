@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
+    implementation("io.github.shashank02051997:FancyToast:2.0.2")
 }
 
 room {
