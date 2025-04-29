@@ -1,5 +1,6 @@
 package com.example.vibebook_yourdailymoodjournal.Data
 
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -9,7 +10,7 @@ data class MoodEntry(
     @PrimaryKey(autoGenerate = true) val id : Int = 0,
     val mood : MoodEmoji?,
     val note : String?,
-    val dateTime : String?
+    val dateTime : String?,
 )
 
 //Enum Class to define emojis

@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -286,23 +287,20 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 val galleryLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickMultipleVisualMedia(4),
                     onResult = {uri ->
+                        if(imageUri.size < 4)
                         uri.let {
-                            val availableSlots = 4 - imageUri.size
-                            if(availableSlots >0 ){
-                                val imagesToAdd = it.take(availableSlots)
-                                imageUri.addAll(imagesToAdd)
-
-                                if (imageUri.size >availableSlots){
+                                imageUri.addAll(it)
+                                if (imageUri.size > 4){
                                     FancyToast.makeText(context,"You Can Add Only Upto 4 Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                                 }
                             }
                             else
                             {
-                                FancyToast.makeText(context,"You Already Added Five Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
+                                FancyToast.makeText(context,"You Already Added Four Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                             }
                         }
-                    }
                 )
+
 
                 //Camera Launcher
                 val cameraLauncher = rememberLauncherForActivityResult(
@@ -313,12 +311,6 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             uri?.let {
                                 if (imageUri.size < 4){
                                     imageUri.add(it)
-                                }
-                                else{
-                                    FancyToast.makeText(
-                                        context, "You Can Add Only Upto 4 Images",
-                                        FancyToast.LENGTH_SHORT,
-                                        FancyToast.WARNING, true).show()
                                 }
                             }
                         }
@@ -410,19 +402,14 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             }
                         }
                     }
-                }
-          Column {
-                imageUri.forEach {
-                        image ->
-                    image?.let {
-                        Row {
+            }
+            Column(modifier = Modifier.fillMaxWidth()) {
+               imageUri.forEach { image ->
+                   image?.let {
                             ShowImageFromGallery(image)
                         }
                     }
-                }
             }
-
-            Text("Voice Note")
         }
     }
 }
@@ -530,14 +517,13 @@ fun createImageUri(context: Context) : Uri? {
 
 
 @Composable fun ShowImageFromGallery(uri: Uri?){
-        Box (modifier = Modifier.fillMaxWidth()
-            .padding(10.dp)
-            .size(130.dp)
-            .clip(RoundedCornerShape(10.dp))){
-                AsyncImage(
-                    model = uri,
-                    contentDescription = "Uploaded From Gallery",
-                )
-
-        }
+    Card(elevation = CardDefaults.cardElevation(10.dp),
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(10.dp)){
+        AsyncImage(
+            model = uri,
+            contentDescription = "Uploaded From Gallery",
+            modifier = Modifier.size(130.dp).fillMaxWidth(),
+        )
+    }
 }
