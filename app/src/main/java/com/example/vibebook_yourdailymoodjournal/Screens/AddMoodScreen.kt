@@ -189,6 +189,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
     var isFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var imageUri = remember { mutableStateListOf<Uri?>() }
+    var tempUri by remember { mutableStateOf<Uri?>(null) }
 
     Box(
         modifier = Modifier
@@ -304,19 +305,15 @@ fun MoodSelector(selectedMood : MoodEmoji?,
 
                 //Camera Launcher
                 val cameraLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.TakePicture(),
-                    onResult = { success ->
-                        if(success){
-                            val uri = imageUri.lastOrNull()
-                            uri?.let {
+                    contract = ActivityResultContracts.TakePicture()
+                ){ success ->
+                        if(success && tempUri != null) {
                                 if (imageUri.size < 4){
-                                    imageUri.add(it)
+                                    imageUri.add(tempUri)
                                 }
-                            }
+                            tempUri = null
                         }
-
-                    }
-                )
+                }
 
                 //Header Text
                 Column {
@@ -339,10 +336,8 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             Card(
                                 modifier = Modifier.clickable(onClick = {
                                     val uri = createImageUri(context)
-                                    uri?.let {
-                                        imageUri.add(it)
-                                        cameraLauncher.launch(uri)
-                                    }
+                                    tempUri = uri
+                                    cameraLauncher.launch(uri!!)
                                 }),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
@@ -405,10 +400,8 @@ fun MoodSelector(selectedMood : MoodEmoji?,
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                imageUri.forEach { image ->
-                   image?.let {
-                            ShowImageFromGallery(image)
-                        }
-                    }
+                       ShowImageFromGallery(image)
+               }
             }
         }
     }
@@ -504,15 +497,15 @@ fun DateTimePickerSection(
 }
 
 fun createImageUri(context: Context) : Uri? {
-    val contetResolver = context.contentResolver
 
+    val contentResolver = context.contentResolver
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
         put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MyApp")
     }
 
-    return contetResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+    return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 }
 
 
