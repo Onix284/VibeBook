@@ -11,6 +11,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,13 +25,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -87,25 +89,30 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
     var selectedMood by remember { mutableStateOf<MoodEmoji?>(null) } //Select Mood Emoji
     var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }//Selected Date
     var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) } // Selected Time
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     Box(modifier = Modifier.fillMaxWidth()) {
 
         //Add Mood Screen
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
 
             //Header
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp)
             ) {
                 //Cancel Button
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "Cancel",
                     modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 30.dp)
+                        .align(alignment = Alignment.CenterVertically)
+                        .padding(20.dp)
                         .size(35.dp)
                         .background(
                             color = Color.Transparent,
@@ -118,8 +125,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                 Text(
                     "Describe Your Mood",
                     modifier = Modifier
-                        .padding(vertical = 30.dp, horizontal = 20.dp)
-                        .height(30.dp),
+                        .align(alignment = Alignment.CenterVertically),
                     fontFamily = FontFamily.SansSerif,
                     fontSize = 25.sp,
 
@@ -142,12 +148,18 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                     selectedMood,
                     onMoodSelected = { mood -> selectedMood = mood },
                     description = description,
-                    onDescriptionChange = { description = it }
+                    onDescriptionChange = { description = it },
+                    selectedImageUris = selectedImageUris,
+                    onImageUrisChanged = { newUris ->
+                        selectedImageUris = newUris
+                    }
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxWidth()
-            .align(Alignment.BottomCenter).padding(bottom = 0.dp)){
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 0.dp)){
             //Save Button
             FloatingActionButton(
                 onClick = {
@@ -156,11 +168,14 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                         val finalDate = selectedDate ?: LocalDate.now()
                         val finalTime = selectedTime ?: LocalTime.MIDNIGHT
                         val combinedDateTime = LocalDateTime.of(finalDate, finalTime)
+
                         val newMoodEntry = MoodEntry(
                             id = 0,
                             mood = selectedMood,
                             note = description,
-                            dateTime = combinedDateTime.toString()
+                            dateTime = combinedDateTime.toString(),
+                            imageList = selectedImageUris.map { it },
+
                         )
                         moodViewModel.addMoodEntry(newMoodEntry)
                     }
@@ -184,22 +199,24 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
 fun MoodSelector(selectedMood : MoodEmoji?,
                  onMoodSelected : (MoodEmoji) -> Unit,
                  description : String,
-                 onDescriptionChange : (String) -> Unit) {
+                 onDescriptionChange : (String) -> Unit,
+                 selectedImageUris: List<Uri>,
+                 onImageUrisChanged: (List<Uri>) -> Unit) {
     //For Enabling and disabling shadow of text field
     var isFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    var imageUri = remember { mutableStateListOf<Uri?>() }
     var tempUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri = remember { mutableStateListOf<Uri>()}
 
     Box(
         modifier = Modifier
-        .fillMaxSize()
-        .pointerInput(Unit) {
-            detectTapGestures(onTap = {//Detects tap gesture
-                focusManager.clearFocus()
-            })
-        }
-        .padding(10.dp)
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {//Detects tap gesture
+                    focusManager.clearFocus()
+                })
+            }
+            .padding(10.dp)
     ) {
         Column {
             //Emoji Row
@@ -288,9 +305,10 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 val galleryLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickMultipleVisualMedia(4),
                     onResult = {uri ->
-                        if(imageUri.size < 4)
+                        if(imageUri.size < 4 )
                         uri.let {
                                 imageUri.addAll(it)
+                            onImageUrisChanged(selectedImageUris + uri)
                                 if (imageUri.size > 4){
                                     FancyToast.makeText(context,"You Can Add Only Upto 4 Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                                 }
@@ -309,9 +327,16 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 ){ success ->
                         if(success && tempUri != null) {
                                 if (imageUri.size < 4){
-                                    imageUri.add(tempUri)
+                                    imageUri.add(tempUri!!)
+                                    Log.d("MyTag", "MoodSelector: $imageUri")
+                                }
+                            else{
+                                    FancyToast.makeText(context,"You Already Added Four Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                                 }
                             tempUri = null
+                        }
+                    else{
+                            FancyToast.makeText(context,"Canceled",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                         }
                 }
 
@@ -348,7 +373,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                     Icon(
                                         imageVector = Icons.Filled.CameraAlt,
                                         contentDescription = null,
-                                        modifier = Modifier.size(35.dp).padding(start = 5.dp)
+                                        modifier = Modifier
+                                            .size(35.dp)
+                                            .padding(start = 5.dp)
                                             .align(alignment = Alignment.CenterVertically)
                                     )
                                     Text(
@@ -373,6 +400,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                     galleryLauncher.launch(PickVisualMediaRequest(
                                         ActivityResultContracts.PickVisualMedia.ImageOnly))
                                 }),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -381,7 +409,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                     Icon(
                                         imageVector = Icons.Filled.FileUpload,
                                         contentDescription = null,
-                                        modifier = Modifier.size(35.dp).padding(start = 5.dp)
+                                        modifier = Modifier
+                                            .size(35.dp)
+                                            .padding(start = 5.dp)
                                             .align(alignment = Alignment.CenterVertically)
                                     )
                                     Text(
@@ -398,9 +428,10 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         }
                     }
             }
-            Column(modifier = Modifier.fillMaxWidth()) {
-               imageUri.forEach { image ->
-                       ShowImageFromGallery(image)
+            LazyRow(modifier = Modifier.fillMaxHeight()) {
+               item {imageUri.forEach { image ->
+                   ShowImageFromGallery(image)
+               }
                }
             }
         }
@@ -509,14 +540,16 @@ fun createImageUri(context: Context) : Uri? {
 }
 
 
-@Composable fun ShowImageFromGallery(uri: Uri?){
+@Composable fun ShowImageFromGallery(uri: Uri){
     Card(elevation = CardDefaults.cardElevation(10.dp),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(10.dp)){
         AsyncImage(
             model = uri,
             contentDescription = "Uploaded From Gallery",
-            modifier = Modifier.size(130.dp).fillMaxWidth(),
+            modifier = Modifier
+                .size(130.dp)
+                .fillMaxWidth(),
         )
     }
 }

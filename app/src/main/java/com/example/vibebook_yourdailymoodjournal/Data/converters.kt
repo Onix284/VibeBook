@@ -1,10 +1,8 @@
 package com.example.vibebook_yourdailymoodjournal.Data
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.net.Uri
 import androidx.room.TypeConverter
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import androidx.core.net.toUri
 
 class Converters {
 
@@ -18,19 +16,15 @@ class Converters {
         return MoodEmoji.valueOf(name)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @TypeConverter
-    fun fromLocalDateTime(value: LocalDateTime): String {
-        return value.format(formatter)
+    fun fromUriListToString(value: List<Uri>?): String {
+        return value?.joinToString(",") { it.toString() } ?: ""
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @TypeConverter
-    fun toLocalDateTime(value: String): LocalDateTime {
-        return LocalDateTime.parse(value, formatter)
+    fun fromStringToUriList(value: String): List<Uri> {
+        return if (value.isEmpty()) emptyList()
+        else value.split(",").map { it.toUri() }
     }
-
 }
