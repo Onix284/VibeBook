@@ -13,8 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
+import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
+import com.example.vibebook_yourdailymoodjournal.Screens.ViewMoodDetails
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
 import com.github.dhaval2404.imagepicker.ImagePicker
 
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val moodDatabase = MoodDatabase.getDatabase(applicationContext)
         val moodViewModel = MoodViewModel(moodDatabase.moodDao())
+
         setContent {
             val navController = rememberNavController()
 
@@ -36,6 +39,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("AddMood") {
                     AddMoods(navController, moodViewModel = moodViewModel)
+                }
+                composable("ViewMood"){
+                    ViewMoodDetails(navController, moodViewModel = moodViewModel)
                 }
             })
         }

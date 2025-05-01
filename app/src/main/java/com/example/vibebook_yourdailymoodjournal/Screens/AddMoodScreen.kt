@@ -8,6 +8,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -70,15 +71,18 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
 import com.shashank.sony.fancytoastlib.FancyToast
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import androidx.core.net.toUri
 
 //Add New Mood Screen
 @SuppressLint("NewApi")
@@ -174,9 +178,9 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                             mood = selectedMood,
                             note = description,
                             dateTime = combinedDateTime.toString(),
-                            imageList = selectedImageUris.map { it },
-
+                            imageList = selectedImageUris.map{it},
                         )
+
                         moodViewModel.addMoodEntry(newMoodEntry)
                     }
                     navController.navigate("MoodList")
@@ -202,6 +206,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                  onDescriptionChange : (String) -> Unit,
                  selectedImageUris: List<Uri>,
                  onImageUrisChanged: (List<Uri>) -> Unit) {
+
     //For Enabling and disabling shadow of text field
     var isFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -305,19 +310,52 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 val galleryLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickMultipleVisualMedia(4),
                     onResult = {uri ->
-                        if(imageUri.size < 4 )
-                        uri.let {
-                                imageUri.addAll(it)
-                            onImageUrisChanged(selectedImageUris + uri)
-                                if (imageUri.size > 4){
-                                    FancyToast.makeText(context,"You Can Add Only Upto 4 Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
-                                }
-                            }
-                            else
-                            {
-                                FancyToast.makeText(context,"You Already Added Four Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
+                        if(imageUri.size < 4 ) {
+                                uri.let {
+                                    imageUri.addAll(it)
+
+
+                                    it.forEach {
+                                        try{
+                                            context.contentResolver.takePersistableUriPermission(
+                                                it,
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                            )
+                                        }catch (e : SecurityException){
+                                            FancyToast.makeText(
+                                                context,
+                                                e.printStackTrace().toString(),
+                                                FancyToast.LENGTH_LONG,
+                                                FancyToast.WARNING,
+                                                true
+                                            ).show()
+                                        }
+                                    }
+
+                                    onImageUrisChanged(selectedImageUris + it)
+
+                                    if (imageUri.size > 4) {
+                                        FancyToast.makeText(
+                                            context,
+                                            "You Can Add Only Upto 4 Images",
+                                            FancyToast.LENGTH_LONG,
+                                            FancyToast.WARNING,
+                                            true
+                                        ).show()
+                                    }
                             }
                         }
+                        else
+                        {
+                            FancyToast.makeText(
+                                context,
+                                "You Already Added Four Images",
+                                FancyToast.LENGTH_LONG,
+                                FancyToast.WARNING,
+                                true
+                            ).show()
+                        }
+                    }
                 )
 
 
@@ -327,8 +365,10 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 ){ success ->
                         if(success && tempUri != null) {
                                 if (imageUri.size < 4){
-                                    imageUri.add(tempUri!!)
-                                    Log.d("MyTag", "MoodSelector: $imageUri")
+                                    tempUri?.let {
+                                        imageUri.add(it)
+                                        onImageUrisChanged(selectedImageUris + it)
+                                    }
                                 }
                             else{
                                     FancyToast.makeText(context,"You Already Added Four Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
@@ -362,7 +402,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                 modifier = Modifier.clickable(onClick = {
                                     val uri = createImageUri(context)
                                     tempUri = uri
-                                    cameraLauncher.launch(uri!!)
+                                    uri?.let {
+                                        cameraLauncher.launch(it)
+                                    }
                                 }),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
@@ -527,6 +569,8 @@ fun DateTimePickerSection(
     }
 }
 
+
+//Create Image Uri on Camera Button Click
 fun createImageUri(context: Context) : Uri? {
 
     val contentResolver = context.contentResolver
@@ -539,7 +583,7 @@ fun createImageUri(context: Context) : Uri? {
     return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 }
 
-
+//Show Image Preview
 @Composable fun ShowImageFromGallery(uri: Uri){
     Card(elevation = CardDefaults.cardElevation(10.dp),
         shape = RoundedCornerShape(20.dp),

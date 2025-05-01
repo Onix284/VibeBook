@@ -63,6 +63,7 @@ fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
                     Card(modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 15.dp)
+                        .clickable(onClick = {navController.navigate("ViewMood")})
                     ){
                         Column(modifier = Modifier.padding(16.dp))
                         {
@@ -119,14 +120,12 @@ fun MoodEntryItem(myMoodEntry: MoodEntry, onDeleteClick : (MoodEntry) -> Unit ) 
                     Column{
                         Text("${myMoodEntry.mood?.emoji} ${myMoodEntry.mood?.name}", fontSize = 35.sp) //Mood Name
                         Text("Time: ${myMoodEntry.dateTime?.substringAfter('T')}") //Mood Time
-                        if(myMoodEntry.imageList.isNotEmpty()){
-                            myMoodEntry.imageList.forEach {
+                        myMoodEntry.imageList.forEach {
                                 AsyncImage(
                                     model = it,
                                     contentDescription = null,
                                     modifier = Modifier.size(100.dp)
                                 )
-                            }
                         }
                     }
 
