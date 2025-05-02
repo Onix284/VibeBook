@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.fancytoast)
+    implementation(libs.androidx.material)
 }
 
 room {

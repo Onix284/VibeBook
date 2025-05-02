@@ -1,24 +1,34 @@
 package com.example.vibebook_yourdailymoodjournal
 
-import android.app.Activity
-import android.app.ComponentCaller
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.padding
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomNavigationItem
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
-import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
+import com.example.vibebook_yourdailymoodjournal.Screens.MoodStats
+import com.example.vibebook_yourdailymoodjournal.Screens.QuotesScreen
+import com.example.vibebook_yourdailymoodjournal.Screens.Screen
 import com.example.vibebook_yourdailymoodjournal.Screens.ViewMoodDetails
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
-import com.github.dhaval2404.imagepicker.ImagePicker
 
 @Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
@@ -30,23 +40,67 @@ class MainActivity : ComponentActivity() {
         val moodDatabase = MoodDatabase.getDatabase(applicationContext)
         val moodViewModel = MoodViewModel(moodDatabase.moodDao())
 
-        setContent {
-            val navController = rememberNavController()
 
-            NavHost(navController, startDestination = "MoodList", builder = {
-                composable("MoodList") {
-                    MoodList(navController, moodViewModel = moodViewModel)
-                }
-                composable("AddMood") {
-                    AddMoods(navController, moodViewModel = moodViewModel)
-                }
-                composable("ViewMood"){
-                    ViewMoodDetails(navController, moodViewModel = moodViewModel)
-                }
-            })
-        }
+     setContent {
+         val navController = rememberNavController()
+         val currentBackStack by navController.currentBackStackEntryAsState()
+         val currentDestination = currentBackStack?.destination?.route
 
+             Scaffold(
+                 bottomBar = {
+                         BottomNavigation(elevation = 8.dp) {
+                             Screen.bottonNavItems.forEach { screen ->
+                                     BottomNavigationItem(
+                                         icon = {
+                                             Icon(
+                                                 screen.icon,
+                                                 contentDescription = screen.title
+                                             )
+                                         },
+                                         label = { Text(screen.title) },
+                                         modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                                             .padding(10.dp),
+                                         selected = currentDestination == screen.route,
+                                         onClick = {
+                                             if (currentDestination != screen.route) {
+                                                 navController.navigate(screen.route) {
+                                                     popUpTo(navController.graph.startDestinationId) {
+                                                         saveState = true
+                                                     }
+                                                     launchSingleTop = true
+                                                     restoreState = true
+                                                 }
+                                             }
+                                         }
+                                     )
+                                 }
+                             }
+                 }
+             ) { innerPadding ->
+                 NavHost(
+                     navController = navController,
+                     startDestination = Screen.MoodList.route,
+                     modifier = Modifier.padding(innerPadding)
+                 ) {
+                     composable(Screen.MoodList.route) {
+                         MoodList(navController, moodViewModel)
+                     }
+                     composable(Screen.MoodStats.route) {
+                         MoodStats()
+                     }
+                     composable(Screen.QuotesScreen.route) {
+                         QuotesScreen()
+                     }
+
+                     // These are internal routes not in bottom nav
+                     composable("AddMood") {
+                         AddMoods(navController, moodViewModel)
+                     }
+                     composable("ViewMood") {
+                         ViewMoodDetails(navController, moodViewModel)
+                     }
+                 }
+             }
+         }
     }
-
 }
-

@@ -12,7 +12,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -71,18 +71,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
 import com.shashank.sony.fancytoastlib.FancyToast
-import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import androidx.core.net.toUri
 
 //Add New Mood Screen
 @SuppressLint("NewApi")
@@ -94,6 +91,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
     var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }//Selected Date
     var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) } // Selected Time
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxWidth()) {
 
@@ -122,7 +120,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                             color = Color.Transparent,
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .clickable(onClick = { navController.navigate("MoodList") })
+                        .clickable(onClick = { navController.popBackStack()})
                 )
 
                 //Main Header
@@ -182,8 +180,12 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                         )
 
                         moodViewModel.addMoodEntry(newMoodEntry)
+                        navController.popBackStack()
                     }
-                    navController.navigate("MoodList")
+                    else{
+                        FancyToast.makeText(context, "Please Fill Required Fields",
+                            FancyToast.LENGTH_SHORT, FancyToast.WARNING, true).show()
+                    }
                 },
                 modifier = Modifier
                     .align(alignment = Alignment.TopCenter)

@@ -47,12 +47,14 @@ fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
     Scaffold(
         //Add New Mood Button
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("AddMood") },
-                modifier = Modifier.padding(vertical = 30.dp)) {
+            FloatingActionButton(onClick = { navController.navigate("AddMood"){
+                launchSingleTop = true
+                restoreState = true
+            } },
+                modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp)) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
             }
-        },
-        floatingActionButtonPosition = FabPosition.Center //Floating Action Button Position
+        }, //Floating Action Button Position
     ) {
 
         // Main content of the screen (List Of Moods)
@@ -63,7 +65,10 @@ fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
                     Card(modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 15.dp)
-                        .clickable(onClick = {navController.navigate("ViewMood")})
+                        .clickable(onClick = {navController.navigate("ViewMood"){
+                            launchSingleTop = true
+                            restoreState = true
+                        } })
                     ){
                         Column(modifier = Modifier.padding(16.dp))
                         {
@@ -94,15 +99,12 @@ fun MoodList(navController: NavController, moodViewModel: MoodViewModel){
                                     onDeleteClick = {moodViewModel.deleteMood(moodEntry)}
                                 )
                             }
-
                         }
                     }
                 }
             }
-
         }
     }
-
 }
 
 //Shows the data of mood
