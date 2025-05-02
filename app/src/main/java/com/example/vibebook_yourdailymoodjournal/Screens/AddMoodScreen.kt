@@ -76,6 +76,8 @@ import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
+import com.example.vibebook_yourdailymoodjournal.ui.theme.Background
+import com.example.vibebook_yourdailymoodjournal.ui.theme.Box
 import com.shashank.sony.fancytoastlib.FancyToast
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -100,18 +102,19 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .background(color = Background)
         ) {
 
             //Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 20.dp)
             ) {
                 //Cancel Button
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "Cancel",
+                    tint = Color.White,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
                         .padding(20.dp)
@@ -120,16 +123,18 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                             color = Color.Transparent,
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .clickable(onClick = { navController.popBackStack()})
+                        .clickable(onClick = { navController.popBackStack()}),
                 )
 
                 //Main Header
                 Text(
                     "Describe Your Mood",
+                    color = Color.White,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically),
                     fontFamily = FontFamily.SansSerif,
                     fontSize = 25.sp,
+
 
                 )
             }
@@ -142,6 +147,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                 onTimeSelected = { selectedTime = it }
             )
 
+            Spacer(modifier = Modifier.height(10.dp))
             //Body
             Box(modifier = Modifier.fillMaxSize()) {
 
@@ -163,7 +169,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
             .align(Alignment.BottomCenter)
             .padding(bottom = 0.dp)){
             //Save Button
-            FloatingActionButton(
+            Button(
                 onClick = {
                     if (selectedMood != null && description.isNotBlank()) {
 
@@ -266,7 +272,8 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             modifier = Modifier
                                 .align(alignment = Alignment.CenterHorizontally)
                                 .padding(vertical = 10.dp),
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
                         )
                     }
 
@@ -388,7 +395,8 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         text = "Photos",
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 25.sp
+                        fontSize = 25.sp,
+                        color = Color.White
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -496,13 +504,16 @@ fun DateTimePickerSection(
     var today = LocalDate.now()
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ){
         //Date Picker Text
         Column {
             //Date Selector Button
-            Button(onClick = {
+            Card(modifier = Modifier.padding(horizontal = 10.dp)
+                .height(90.dp)
+                .width(145.dp),
+                onClick = {
                 DatePickerDialog(
                     context,
                     { _, dayOfMonth, month, year ->
@@ -513,32 +524,43 @@ fun DateTimePickerSection(
                     today.monthValue - 1,
                     today.dayOfMonth
                 ).show()
-            }){
+            },
+                colors = CardDefaults.cardColors(
+                    containerColor = Box
+                )
+            ) {
                 Text(
-                    text = "Select Date"
+                    text = "Select Date",
+                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                        .padding(top = 20.dp),
+                    fontSize = 15.sp,
+                    color = Color.White
+                )
+
+                val currentDate = LocalDate.now()
+
+                Text(
+                    text = if (selectedDate != null) {
+                        today = selectedDate
+                        "${selectedDate.dayOfMonth}/${selectedDate.month}/${selectedDate.year} "
+                    } else {
+                        "$currentDate"
+                    }, modifier = Modifier.padding(top = 10.dp, start = 3.dp)
+                        .align(alignment = Alignment.CenterHorizontally),
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = Color.White
                 )
             }
-
-            val currentDate = LocalDate.now()
-
-            Text(
-                text = if(selectedDate != null){
-                    today = selectedDate
-                     "${selectedDate.dayOfMonth}/${selectedDate.month}/${selectedDate.year} "
-                }
-                else{
-                    "$currentDate"
-                }, modifier = Modifier.padding(vertical = 20.dp),
-                fontSize = 17.sp,
-                fontFamily = FontFamily.Monospace
-            )
         }
 
 
         //Time Picker Text
         Column {
             //Time Selector Button
-            Button(onClick = {
+            Card(modifier = Modifier.padding(horizontal = 10.dp)
+                .height(90.dp)
+                .width(200.dp),onClick = {
                 val now = LocalTime.now()
                 TimePickerDialog(
                     context,
@@ -550,22 +572,31 @@ fun DateTimePickerSection(
                     now.minute,
                     false
                 ).show()
-            }) {
+            },
+                colors = CardDefaults.cardColors(
+                    containerColor = Box
+                ),
+            ) {
                 Text(
-                    text = "Select Time"
+                    text = "Select Time",
+                    Modifier.align(alignment = Alignment.CenterHorizontally)
+                        .padding(top = 20.dp),
+                    color = Color.White
+                )
+
+                Text(
+                    text = if (selectedTime != null) {
+                        "$selectedTime"
+                    } else {
+                        "${LocalTime.now().hour}:${LocalTime.now().minute}"
+                    },
+                    modifier = Modifier.padding(top = 10.dp)
+                        .align(alignment = Alignment.CenterHorizontally),
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = Color.White
                 )
             }
-            Text(
-                text =  if(selectedTime != null){
-                    "$selectedTime"
-                }
-                else{
-                    "${LocalTime.now().hour}:${LocalTime.now().minute}"
-                },
-                modifier = Modifier.padding(horizontal = 40.dp, vertical = 20.dp),
-                fontSize = 17.sp,
-                fontFamily = FontFamily.Monospace,
-            )
         }
 
     }
