@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,8 +36,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel){
 
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.Blue)
-                .padding()){
+                .background(color = Color.Blue)){
 
                 Text("You Vibe", modifier = Modifier.align(Alignment.Center))
 
@@ -47,25 +47,22 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel){
                         .clickable(onClick = {navController.popBackStack()})
                 )
 
-                moodEntries.forEach {
-//                    MainContent(it)
-                }
+
            }
        }
 
-//
-//@Composable
-//fun MainContent(moodEntry: MoodEntry){
-//    LazyColumn(modifier = Modifier.fillMaxSize()){
-//        item {
-//            moodEntry.imageList.forEach {
-//                AsyncImage(
-//                    model = it,
-//                    contentDescription = null,
-//                    modifier = Modifier.size(500.dp).padding(top = 0.dp)
-//                )
-//            }
-//        }
-//    }
-//
-//}
+
+@Composable
+fun MainContent(moodEntry: MoodEntry){
+    Column(modifier = Modifier.fillMaxSize()){
+            moodEntry.imageList.forEach {
+                AsyncImage(
+                    model = it,
+                    contentDescription = null,
+                    modifier = Modifier.size(50.dp).padding(top = 0.dp),
+                )
+            }
+
+        Text(moodEntry.mood!!.name)
+    }
+}

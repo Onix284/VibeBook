@@ -117,10 +117,6 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                         .align(alignment = Alignment.CenterVertically)
                         .padding(vertical = 20.dp, horizontal = 10.dp)
                         .size(40.dp)
-//                        .background(
-//                            color = Color.Red,
-//                            shape = RoundedCornerShape(16.dp)
-//                        )
                         .clickable(onClick = { navController.popBackStack()}),
                     ){
                         Icon(

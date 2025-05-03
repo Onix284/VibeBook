@@ -3,10 +3,14 @@ package com.example.vibebook_yourdailymoodjournal
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -17,12 +21,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
+import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodStats
@@ -30,17 +37,19 @@ import com.example.vibebook_yourdailymoodjournal.Screens.QuotesScreen
 import com.example.vibebook_yourdailymoodjournal.Screens.Screen
 import com.example.vibebook_yourdailymoodjournal.Screens.ViewMoodDetails
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
+import com.example.vibebook_yourdailymoodjournal.ui.theme.DarkBlue
+import com.example.vibebook_yourdailymoodjournal.ui.theme.fontFamily
 
 @Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val moodDatabase = MoodDatabase.getDatabase(applicationContext)
         val moodViewModel = MoodViewModel(moodDatabase.moodDao())
-
 
      setContent {
          val navController = rememberNavController()
@@ -49,7 +58,10 @@ class MainActivity : ComponentActivity() {
 
              Scaffold(
                  bottomBar = {
-                         BottomNavigation(elevation = 8.dp, modifier = Modifier.navigationBarsPadding()) {
+                         BottomNavigation(elevation = 8.dp,
+                             modifier = Modifier.navigationBarsPadding(),
+                             backgroundColor = Color.White,
+                             contentColor = Color.Black) {
                              Screen.bottonNavItems.forEach { screen ->
                                      BottomNavigationItem(
                                          icon = {
@@ -58,7 +70,11 @@ class MainActivity : ComponentActivity() {
                                                  contentDescription = screen.title
                                              )
                                          },
-                                         label = { Text(screen.title) },
+                                         label = { Text(text = screen.title,
+                                             fontFamily = fontFamily,
+                                             color = Color.Black,
+                                             modifier = Modifier.padding(top = 5.dp))
+                                                 },
                                          modifier = Modifier.align(alignment = Alignment.CenterVertically)
                                              .padding(10.dp),
                                          selected = currentDestination == screen.route,

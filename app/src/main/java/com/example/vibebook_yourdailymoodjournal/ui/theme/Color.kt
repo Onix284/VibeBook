@@ -16,5 +16,6 @@ val SoftBlue = Color(0xFFA0F5FF)
 val SkyBlue = Color(0xFF00EBFF)
 val Orange = Color(0xFFFF8900)
 val DarkGreen = Color(0xFF08B229)
+val DarkGry = Color(0xFF3A3939)
 
 

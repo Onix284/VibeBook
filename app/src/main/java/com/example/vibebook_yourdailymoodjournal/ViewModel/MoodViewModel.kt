@@ -1,5 +1,6 @@
 package com.example.vibebook_yourdailymoodjournal.ViewModel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDao
@@ -13,6 +14,7 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
 
     private val _moodEntries = MutableStateFlow<List<MoodEntry>>(emptyList())
     val moodEntries: StateFlow<List<MoodEntry>> = _moodEntries
+
 
     init {
         loadMoodEntries()
