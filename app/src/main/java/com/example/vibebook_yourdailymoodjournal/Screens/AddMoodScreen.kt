@@ -12,7 +12,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,13 +40,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -67,7 +65,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,12 +74,19 @@ import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEmoji
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
-import com.example.vibebook_yourdailymoodjournal.ui.theme.Background
-import com.example.vibebook_yourdailymoodjournal.ui.theme.Box
+import com.example.vibebook_yourdailymoodjournal.ui.theme.DarkBlue
+import com.example.vibebook_yourdailymoodjournal.ui.theme.DarkGreen
+import com.example.vibebook_yourdailymoodjournal.ui.theme.MidBlue
+import com.example.vibebook_yourdailymoodjournal.ui.theme.Orange
+import com.example.vibebook_yourdailymoodjournal.ui.theme.SkyBlue
+import com.example.vibebook_yourdailymoodjournal.ui.theme.SoftBlue
+import com.example.vibebook_yourdailymoodjournal.ui.theme.fontFamily
 import com.shashank.sony.fancytoastlib.FancyToast
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 //Add New Mood Screen
 @SuppressLint("NewApi")
@@ -102,42 +107,43 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(color = Background)
         ) {
 
-            //Header
+            //Cancel Button
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
-                //Cancel Button
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = "Cancel",
-                    tint = Color.White,
-                    modifier = Modifier
+                    Box( modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
-                        .padding(20.dp)
-                        .size(35.dp)
-                        .background(
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(16.dp)
-                        )
+                        .padding(vertical = 20.dp, horizontal = 10.dp)
+                        .size(40.dp)
+//                        .background(
+//                            color = Color.Red,
+//                            shape = RoundedCornerShape(16.dp)
+//                        )
                         .clickable(onClick = { navController.popBackStack()}),
-                )
+                    ){
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Cancel",
+                            tint = Color.Red,
+                            modifier = Modifier.align(Alignment.Center).size(30.dp))
+                    }
+
 
                 //Main Header
                 Text(
-                    "Describe Your Mood",
-                    color = Color.White,
+                    text = "Hey! \uD83D\uDC4B How Are You?",
+                    color = Color.Black,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically),
-                    fontFamily = FontFamily.SansSerif,
                     fontSize = 25.sp,
-
-
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             //DateTimePicker Function Calling
             DateTimePickerSection(
@@ -163,44 +169,50 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
                     }
                 )
             }
-        }
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .align(Alignment.BottomCenter)
-            .padding(bottom = 0.dp)){
+
+
             //Save Button
-            Button(
-                onClick = {
-                    if (selectedMood != null && description.isNotBlank()) {
+            Box(modifier = Modifier.fillMaxWidth()
+                .align(Alignment.CenterHorizontally)) {
+                Button(
+                    onClick = {
+                        if (selectedMood != null && description.isNotBlank()) {
 
-                        val finalDate = selectedDate ?: LocalDate.now()
-                        val finalTime = selectedTime ?: LocalTime.MIDNIGHT
-                        val combinedDateTime = LocalDateTime.of(finalDate, finalTime)
+                            val finalDate = selectedDate ?: LocalDate.now()
+                            val finalTime = selectedTime ?: LocalTime.MIDNIGHT
+                            val combinedDateTime = LocalDateTime.of(finalDate, finalTime)
 
-                        val newMoodEntry = MoodEntry(
-                            id = 0,
-                            mood = selectedMood,
-                            note = description,
-                            dateTime = combinedDateTime.toString(),
-                            imageList = selectedImageUris.map{it},
-                        )
+                            val newMoodEntry = MoodEntry(
+                                id = 0,
+                                mood = selectedMood,
+                                note = description,
+                                dateTime = combinedDateTime.toString(),
+                                imageList = selectedImageUris.map{it},
+                            )
 
-                        moodViewModel.addMoodEntry(newMoodEntry)
-                        navController.popBackStack()
-                    }
-                    else{
-                        FancyToast.makeText(context, "Please Fill Required Fields",
-                            FancyToast.LENGTH_SHORT, FancyToast.WARNING, true).show()
-                    }
-                },
-                modifier = Modifier
-                    .align(alignment = Alignment.TopCenter)
-                    .padding(bottom = 50.dp)
-            ) {
-                Icon(Icons.Default.Done, contentDescription = "Save Button")
+                            moodViewModel.addMoodEntry(newMoodEntry)
+                            FancyToast.makeText(context, "Saved Successfully!",
+                                FancyToast.LENGTH_SHORT, FancyToast.SUCCESS, true).show()
+                            navController.popBackStack()
+                        }
+                        else{
+                            FancyToast.makeText(context, "Please Fill Required Fields",
+                                FancyToast.LENGTH_SHORT, FancyToast.WARNING, true).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .align(alignment = Alignment.BottomCenter)
+                        .padding(10.dp)
+                        .size(height = 50.dp, width = 130.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DarkGreen,
+
+                    )
+                ) {
+                    Text(text = "Save", fontSize = 20.sp, fontFamily = fontFamily)
+                }
             }
         }
-
     }
 
 }
@@ -250,9 +262,16 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                 .background(
                                     //If particular emoji is selected then make its background Green and others Yellow
                                     if (isSelected) {
-                                        Color.Green
-                                    } else {
-                                        Color.Yellow
+                                        when(mood.name){
+                                            "Amazing" -> Color.Green
+                                            "Good" -> SkyBlue
+                                            "Okay" -> Color.Yellow
+                                            "Bad" -> Orange
+                                            "Terrible" -> Color.Red
+                                            else -> Color.White
+                                        }
+                                    }else{
+                                        Color.White
                                     }
 
                                 )
@@ -264,6 +283,7 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             Text(
                                 text = mood.emoji,
                                 fontSize = 32.sp,
+                                fontFamily = fontFamily
                             )
                         }
                         //Mood Text
@@ -273,15 +293,22 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                 .align(alignment = Alignment.CenterHorizontally)
                                 .padding(vertical = 10.dp),
                             fontWeight = FontWeight.Medium,
-                            color = Color.White
                         )
                     }
 
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
+
 
             //Description TextField
+            Text(
+                text = "Note",
+                fontFamily = fontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 25.sp,
+                modifier = Modifier.padding(10.dp)
+            )
+
             TextField(
                 value = description, onValueChange = onDescriptionChange,
                 modifier = Modifier
@@ -292,17 +319,27 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         isFocused = focusState.isFocused
                     }
                     .shadow(
-                        elevation = if (isFocused) 8.dp else 0.dp,
+                        elevation = if (isFocused) 12.dp else 8.dp,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .border(1.dp, color = Color.Blue, RoundedCornerShape(10.dp)),
-                placeholder = { Text("Enter About Your Mood") },
-                shape = RoundedCornerShape(10.dp),
-                maxLines = 3,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                )
+                    .border(1.dp, color = Color.White, RoundedCornerShape(10.dp)),
+                    placeholder = { Text("Describe Your Mood",
+                    fontFamily = fontFamily,
+                    color = Color.White)},
+                    shape = RoundedCornerShape(10.dp),
+                    maxLines = 3,
+                textStyle = TextStyle(
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontFamily = fontFamily
+                ),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedContainerColor = MidBlue,
+                        unfocusedContainerColor = DarkBlue,
+                        focusedTextColor = Color.White,
+                        ),
             )
 
 
@@ -392,11 +429,11 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                 //Header Text
                 Column {
                     Text(
-                        text = "Photos",
-                        fontFamily = FontFamily.SansSerif,
+                        text = "Add Photos",
+                        fontFamily = fontFamily,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 25.sp,
-                        color = Color.White
+                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 0.dp)
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -409,14 +446,17 @@ fun MoodSelector(selectedMood : MoodEmoji?,
 
                         //Upload From Camera Card
                             Card(
-                                modifier = Modifier.clickable(onClick = {
+                                modifier = Modifier
+                                    .weight(0.5f).clickable(onClick = {
+
                                     val uri = createImageUri(context)
                                     tempUri = uri
                                     uri?.let {
                                         cameraLauncher.launch(it)
                                     }
                                 }),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                colors = CardDefaults.cardColors(SoftBlue)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -433,9 +473,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                     Text(
                                         "Camera",
                                         fontSize = 20.sp,
-                                        fontFamily = FontFamily.SansSerif,
+                                        fontFamily = fontFamily,
                                         modifier = Modifier
-                                            .padding(horizontal = 15.dp, vertical = 10.dp)
+                                            .padding(horizontal = 10.dp, vertical = 5.dp)
                                             .align(alignment = Alignment.CenterVertically),
                                         fontWeight = FontWeight.Medium
                                     )
@@ -446,13 +486,18 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             Spacer(modifier = Modifier.width(20.dp))
                             // Add space between cards
 
-                            //Upload From Gallery Card
+                        //Upload From Gallery Card
+                        Box {
+
+                        }
                             Card(
-                                modifier = Modifier.clickable(onClick = {
+                                modifier = Modifier
+                                    .weight(0.5f).clickable(onClick = {
                                     galleryLauncher.launch(PickVisualMediaRequest(
                                         ActivityResultContracts.PickVisualMedia.ImageOnly))
                                 }),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                        colors = CardDefaults.cardColors(SoftBlue)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(5.dp),
@@ -469,9 +514,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                                     Text(
                                         "Upload",
                                         fontSize = 20.sp,
-                                        fontFamily = FontFamily.SansSerif,
+                                        fontFamily = fontFamily,
                                         modifier = Modifier
-                                            .padding(horizontal = 15.dp, vertical = 10.dp)
+                                            .padding(horizontal = 10.dp, vertical = 5.dp)
                                             .padding(start = 5.dp),
                                         fontWeight = FontWeight.Medium
                                     )
@@ -508,11 +553,11 @@ fun DateTimePickerSection(
         horizontalArrangement = Arrangement.SpaceEvenly
     ){
         //Date Picker Text
-        Column {
             //Date Selector Button
             Card(modifier = Modifier.padding(horizontal = 10.dp)
                 .height(90.dp)
-                .width(145.dp),
+                .width(145.dp)
+                .weight(0.5f),
                 onClick = {
                 DatePickerDialog(
                     context,
@@ -526,41 +571,43 @@ fun DateTimePickerSection(
                 ).show()
             },
                 colors = CardDefaults.cardColors(
-                    containerColor = Box
-                )
+                    containerColor = DarkBlue
+                ),
+                elevation = CardDefaults.cardElevation(10.dp)
             ) {
-                Text(
-                    text = "Select Date",
-                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-                        .padding(top = 20.dp),
-                    fontSize = 15.sp,
-                    color = Color.White
-                )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Date",
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                            .padding(top = 20.dp),
+                        fontSize = 17.sp,
+                        color = Color.White,
+                        fontFamily = fontFamily
+                    )
 
-                val currentDate = LocalDate.now()
+                    val currentDate = LocalDate.now()
 
-                Text(
-                    text = if (selectedDate != null) {
-                        today = selectedDate
-                        "${selectedDate.dayOfMonth}/${selectedDate.month}/${selectedDate.year} "
-                    } else {
-                        "$currentDate"
-                    }, modifier = Modifier.padding(top = 10.dp, start = 3.dp)
-                        .align(alignment = Alignment.CenterHorizontally),
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily.Monospace,
-                    color = Color.White
-                )
-            }
+                    Text(
+                        text = if (selectedDate != null) {
+                            today = selectedDate
+                            "${selectedDate.dayOfMonth}/${selectedDate.month}/${selectedDate.year} "
+                        } else {
+                            "$currentDate"
+                        }, modifier = Modifier.padding(top = 10.dp, start = 3.dp)
+                            .align(alignment = Alignment.CenterHorizontally),
+                        fontSize = 17.sp,
+                        fontFamily = fontFamily,
+                        color = Color.White
+                    )
+                }
         }
 
 
-        //Time Picker Text
-        Column {
             //Time Selector Button
             Card(modifier = Modifier.padding(horizontal = 10.dp)
                 .height(90.dp)
-                .width(200.dp),onClick = {
+                .width(200.dp)
+                .weight(0.5f),onClick = {
                 val now = LocalTime.now()
                 TimePickerDialog(
                     context,
@@ -574,29 +621,36 @@ fun DateTimePickerSection(
                 ).show()
             },
                 colors = CardDefaults.cardColors(
-                    containerColor = Box
+                    containerColor = DarkBlue
                 ),
+                elevation = CardDefaults.cardElevation(10.dp),
             ) {
-                Text(
-                    text = "Select Time",
-                    Modifier.align(alignment = Alignment.CenterHorizontally)
-                        .padding(top = 20.dp),
-                    color = Color.White
-                )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
 
-                Text(
-                    text = if (selectedTime != null) {
-                        "$selectedTime"
-                    } else {
-                        "${LocalTime.now().hour}:${LocalTime.now().minute}"
-                    },
-                    modifier = Modifier.padding(top = 10.dp)
-                        .align(alignment = Alignment.CenterHorizontally),
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily.Monospace,
-                    color = Color.White
-                )
-            }
+                    Text(
+                        text = "Time",
+                        Modifier.align(alignment = Alignment.CenterHorizontally)
+                            .padding(top = 20.dp),
+                        color = Color.White,
+                        fontSize = 17.sp,
+                        fontFamily = fontFamily
+                    )
+
+                    Text(
+
+                        text = if (selectedTime != null) {
+                            selectedTime.format(formatter)
+                        } else {
+                            LocalTime.now().format(formatter)
+                        },
+                        modifier = Modifier.padding(top = 10.dp)
+                            .align(alignment = Alignment.CenterHorizontally),
+                        fontSize = 17.sp,
+                        fontFamily = fontFamily,
+                        color = Color.White
+                    )
+                }
         }
 
     }

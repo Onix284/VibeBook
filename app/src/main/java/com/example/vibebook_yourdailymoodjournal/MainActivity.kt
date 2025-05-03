@@ -1,15 +1,16 @@
 package com.example.vibebook_yourdailymoodjournal
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
              Scaffold(
                  bottomBar = {
-                         BottomNavigation(elevation = 8.dp) {
+                         BottomNavigation(elevation = 8.dp, modifier = Modifier.navigationBarsPadding()) {
                              Screen.bottonNavItems.forEach { screen ->
                                      BottomNavigationItem(
                                          icon = {

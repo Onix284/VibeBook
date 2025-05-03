@@ -18,10 +18,9 @@ data class MoodEntry(
 
 //Enum Class to define emojis
 enum class MoodEmoji(val emoji : String){
-    RAD("😄"),
-    GOOD("🙂"),
-    MEH("😐"),
-    BAD("🙁"),
-    AWFUL("😢")
+    Amazing("😄"),
+    Good("🙂"),
+    Okay("😐"),
+    Bad("🙁"),
+    Terrible("😢")
 }
-

@@ -86,7 +86,9 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.fancytoast)
     implementation(libs.androidx.material)
+    implementation(libs.androidx.ui.text.google.fonts)
 }
+
 
 room {
     schemaDirectory("$projectDir/schemas/")
