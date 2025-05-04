@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,8 +27,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,6 +38,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
+import com.example.vibebook_yourdailymoodjournal.ui.theme.DarkBlue
 import com.example.vibebook_yourdailymoodjournal.ui.theme.Orange
 import com.example.vibebook_yourdailymoodjournal.ui.theme.SkyBlue
 import com.example.vibebook_yourdailymoodjournal.ui.theme.fontFamily
@@ -111,15 +115,54 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                         }
 
                         item {
-                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.padding(10.dp)){
-                                moodEntry?.imageList?.forEach {
-                                    images ->
-                                    AsyncImage(
-                                        model = images,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(200.dp)
-                                    )
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
 
+                        item {
+                            val imageList = moodEntry?.imageList ?: emptyList()
+
+                            if(imageList.size == 1){
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                    horizontalArrangement = Arrangement.Center
+                                ){
+                                    Card {
+                                        AsyncImage(
+                                            model = imageList[0],
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    }
+                                }
+                            }
+
+                            else if (imageList.size > 1){
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ){
+                                    moodEntry?.imageList?.forEach {
+                                            images ->
+                                        Card(modifier = Modifier
+                                            .size(180.dp)
+                                            .padding(5.dp)
+                                            .clip(RoundedCornerShape(16.dp)),
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = CardDefaults.cardColors(Color.Transparent)
+                                        ) {
+                                            AsyncImage(
+                                                model = images,
+                                                contentDescription = null,
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        }
+
+                                    }
                                 }
                             }
                         }
@@ -129,12 +172,13 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                                 .align(alignment = Alignment.Center)
                                 .padding(horizontal = 30.dp, vertical = 20.dp)
                                 .defaultMinSize(minHeight = 100.dp),
-                                colors = CardDefaults.cardColors(Color.White)) {
+                                colors = CardDefaults.cardColors(DarkBlue)) {
 
                                 Text(text = moodEntry?.note.toString(),
                                     modifier = Modifier.padding(15.dp),
                                     fontFamily = fontFamily,
-                                    fontWeight = FontWeight.SemiBold)
+                                    fontSize = 18.sp,
+                                    color = Color.White)
                             }
                         }
                     }
