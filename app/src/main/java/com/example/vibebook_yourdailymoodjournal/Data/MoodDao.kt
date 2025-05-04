@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 
 //Data Access objects, which declares functions to be performed
@@ -19,4 +20,7 @@ interface MoodDao {
 
     @Query("SELECT * FROM mood_entries ORDER BY dateTime DESC")
     suspend fun getAllMood() : List<MoodEntry>
+
+    @Query("SELECT * FROM mood_entries WHERE id = :id")
+    fun getMoodById(id: Int): Flow<MoodEntry?>
 }

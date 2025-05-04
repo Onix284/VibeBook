@@ -350,48 +350,46 @@ fun MoodSelector(selectedMood : MoodEmoji?,
 
                 //Gallery Launcher
                 val galleryLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.PickMultipleVisualMedia(4),
+                    contract = ActivityResultContracts.PickMultipleVisualMedia(2),
                     onResult = {uri ->
-                        if(imageUri.size < 4 ) {
-                                uri.let {
-                                    imageUri.addAll(it)
+                        val remainingSlots = 2 - imageUri.size
 
+                        val allowedUris = uri.take(remainingSlots)
 
-                                    it.forEach {
-                                        try{
-                                            context.contentResolver.takePersistableUriPermission(
-                                                it,
-                                                Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            )
-                                        }catch (e : SecurityException){
-                                            FancyToast.makeText(
-                                                context,
-                                                e.printStackTrace().toString(),
-                                                FancyToast.LENGTH_LONG,
-                                                FancyToast.WARNING,
-                                                true
-                                            ).show()
-                                        }
-                                    }
-
-                                    onImageUrisChanged(selectedImageUris + it)
-
-                                    if (imageUri.size > 4) {
-                                        FancyToast.makeText(
-                                            context,
-                                            "You Can Add Only Upto 4 Images",
-                                            FancyToast.LENGTH_LONG,
-                                            FancyToast.WARNING,
-                                            true
-                                        ).show()
-                                    }
-                            }
-                        }
-                        else
-                        {
+                        if (remainingSlots <= 0) {
                             FancyToast.makeText(
                                 context,
-                                "You Already Added Four Images",
+                                "You Already Added Two Images",
+                                FancyToast.LENGTH_LONG,
+                                FancyToast.WARNING,
+                                true
+                            ).show()
+                            return@rememberLauncherForActivityResult
+                        }
+
+                        allowedUris.forEach { uri ->
+                            try {
+                                context.contentResolver.takePersistableUriPermission(
+                                    uri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                )
+                            } catch (e: SecurityException) {
+                                FancyToast.makeText(
+                                    context,
+                                    e.printStackTrace().toString(),
+                                    FancyToast.LENGTH_LONG,
+                                    FancyToast.WARNING,
+                                    true
+                                ).show()
+                            }
+                        }
+                        imageUri.addAll(allowedUris)
+                        onImageUrisChanged(selectedImageUris + allowedUris)
+
+                        if (uri.size > remainingSlots) {
+                            FancyToast.makeText(
+                                context,
+                                "You can only add ${remainingSlots} more image(s)",
                                 FancyToast.LENGTH_LONG,
                                 FancyToast.WARNING,
                                 true
@@ -406,14 +404,14 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                     contract = ActivityResultContracts.TakePicture()
                 ){ success ->
                         if(success && tempUri != null) {
-                                if (imageUri.size < 4){
+                                if (imageUri.size < 2){
                                     tempUri?.let {
                                         imageUri.add(it)
                                         onImageUrisChanged(selectedImageUris + it)
                                     }
                                 }
                             else{
-                                    FancyToast.makeText(context,"You Already Added Four Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
+                                    FancyToast.makeText(context,"You Already Added Two Images",FancyToast.LENGTH_LONG,FancyToast.WARNING,true).show()
                                 }
                             tempUri = null
                         }
@@ -483,9 +481,6 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                             // Add space between cards
 
                         //Upload From Gallery Card
-                        Box {
-
-                        }
                             Card(
                                 modifier = Modifier
                                     .weight(0.5f).clickable(onClick = {
@@ -521,10 +516,9 @@ fun MoodSelector(selectedMood : MoodEmoji?,
                         }
                     }
             }
-            LazyRow(modifier = Modifier.fillMaxHeight()) {
-               item {imageUri.forEach { image ->
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+               imageUri.forEach { image ->
                    ShowImageFromGallery(image)
-               }
                }
             }
         }

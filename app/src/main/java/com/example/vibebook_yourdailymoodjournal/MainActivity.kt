@@ -9,12 +9,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,14 +23,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
-import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodStats
@@ -37,7 +36,6 @@ import com.example.vibebook_yourdailymoodjournal.Screens.QuotesScreen
 import com.example.vibebook_yourdailymoodjournal.Screens.Screen
 import com.example.vibebook_yourdailymoodjournal.Screens.ViewMoodDetails
 import com.example.vibebook_yourdailymoodjournal.ViewModel.MoodViewModel
-import com.example.vibebook_yourdailymoodjournal.ui.theme.DarkBlue
 import com.example.vibebook_yourdailymoodjournal.ui.theme.fontFamily
 
 @Suppress("DEPRECATION")
@@ -113,8 +111,12 @@ class MainActivity : ComponentActivity() {
                      composable("AddMood") {
                          AddMoods(navController, moodViewModel)
                      }
-                     composable("ViewMood") {
-                         ViewMoodDetails(navController, moodViewModel)
+                     composable("ViewMood/{id}") { backStackEntry ->
+                         val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+                         if(id != null){
+                             ViewMoodDetails(navController, moodViewModel, id)
+                         }
+
                      }
                  }
              }

@@ -149,7 +149,7 @@ fun MoodEntryItem(myMoodEntry: MoodEntry, onDeleteClick : (MoodEntry) -> Unit, n
 
     Card(modifier = Modifier.padding(5.dp)
         .clip(shape = RoundedCornerShape(15.dp))
-        .clickable(onClick = {navController.navigate("ViewMood"){
+        .clickable(onClick = {navController.navigate("ViewMood/${myMoodEntry.id}"){
         launchSingleTop = true
         restoreState = true
     } }),
