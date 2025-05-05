@@ -87,6 +87,9 @@ dependencies {
     implementation(libs.fancytoast)
     implementation(libs.androidx.material)
     implementation(libs.androidx.ui.text.google.fonts)
+
+    //Charts
+    implementation(libs.charts)
 }
 
 

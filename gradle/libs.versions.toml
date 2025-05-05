@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.2"
+charts = "0.2.4-alpha"
 coilCompose = "2.5.0"
 fancytoast = "2.0.2"
 fragmentKtx = "1.8.6"
@@ -41,6 +42,7 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+charts = { module = "com.github.tehras:charts", version.ref = "charts" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 fancytoast = { module = "io.github.shashank02051997:FancyToast", version.ref = "fancytoast" }
 imagepicker = { module = "com.github.dhaval2404:imagepicker", version.ref = "imagepicker" }

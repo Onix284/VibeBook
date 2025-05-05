@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                          MoodList(navController, moodViewModel)
                      }
                      composable(Screen.MoodStats.route) {
-                         MoodStats()
+                         MoodStats(moodViewModel)
                      }
                      composable(Screen.QuotesScreen.route) {
                          QuotesScreen()
