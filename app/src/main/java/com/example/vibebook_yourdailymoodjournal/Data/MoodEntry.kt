@@ -24,3 +24,5 @@ enum class MoodEmoji(val emoji : String){
     Bad("🙁"),
     Terrible("😢")
 }
+
+

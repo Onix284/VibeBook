@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
+import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodStats
