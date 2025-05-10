@@ -16,6 +16,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
+
         applicationId = "com.example.vibebook_yourdailymoodjournal"
         minSdk = 24
         targetSdk = 35
@@ -90,6 +91,20 @@ dependencies {
 
     //Charts
     implementation(libs.charts)
+
+    //Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //Ktor
+    implementation(libs.ktor.client.core) //Client Dependency
+    implementation(libs.ktor.client.cio) //Engine Dependency
+    implementation(libs.ktor.client.logging) // Logging Dependency
+    implementation(libs.ktor.ktor.client.content.negotiation) //Content Negotiation Dependency
+    implementation(libs.ktor.serialization.kotlinx.json.v233) //Serialization Dependency
+    implementation(libs.ktor.client.okhttp) //OkHttp Dependency
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.okhttp.v235)
 }
 
 

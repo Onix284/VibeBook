@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
                          MoodStats(moodViewModel)
                      }
                      composable(Screen.QuotesScreen.route) {
-                         QuotesScreen()
+                         QuotesScreen(moodViewModel)
                      }
 
                      // These are internal routes not in bottom nav
