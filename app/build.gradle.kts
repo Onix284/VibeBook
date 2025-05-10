@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.ktor.client.okhttp) //OkHttp Dependency
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.okhttp.v235)
+    implementation(libs.ktor.client.serialization)
 }
 
 

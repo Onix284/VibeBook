@@ -13,6 +13,7 @@ import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+
 object KtorClient{
 
     val okHttpClient : HttpClient by lazy{
@@ -24,10 +25,10 @@ object KtorClient{
                 })
             }
 
-
             install(Logging) {
                 level = LogLevel.BODY
             }
+
             install(HttpTimeout) {
                 requestTimeoutMillis = 15_000
                 connectTimeoutMillis = 10_000
@@ -35,8 +36,9 @@ object KtorClient{
             }
         }
     }
-
 }
-    suspend fun GetQuotes(): QuotesResponse {
-        return okHttpClient.get("https://zenquotes.io/api/random").body()
-    }
+
+suspend fun GetQuotes(): List<QuotesResponseItem> {
+     val response : List<QuotesResponseItem> = okHttpClient.get("https://zenquotes.io/api/random").body()
+     return response
+}
