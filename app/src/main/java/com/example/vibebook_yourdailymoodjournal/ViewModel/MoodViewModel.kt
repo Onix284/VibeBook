@@ -1,6 +1,11 @@
 package com.example.vibebook_yourdailymoodjournal.ViewModel
 
+import android.Manifest
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDao
@@ -71,12 +76,21 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
     }
 
     //Get Quote From Ktor Client
-    fun getQuote(){
+    fun getQuote(context : Context){
         viewModelScope.launch {
 
             //Loading
             _state.update {
                 it.copy(isLoading = true, error = null)
+            }
+
+
+            // Check for internet connectivity
+            if (!isNetworkAvailable(context)) {
+                _state.update {
+                    it.copy(isLoading = false, error = "Please turn on your internet connection to fetch quotes.")
+                }
+                return@launch
             }
 
             //Store API Response to Response
@@ -115,3 +129,12 @@ data class QuoteState(
     val quoteResponse : QuotesResponseItem? = null,
     val error : String? = null
 )
+
+//Check If The App Has Internet Enabled
+@RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork
+    val capabilities = connectivityManager.getNetworkCapabilities(network)
+    return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+}

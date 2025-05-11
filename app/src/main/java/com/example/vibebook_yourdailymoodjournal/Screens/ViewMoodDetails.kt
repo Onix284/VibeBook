@@ -1,7 +1,6 @@
 package com.example.vibebook_yourdailymoodjournal.Screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,9 +53,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
 
     Column(modifier = Modifier.fillMaxSize()
     ){
-
         Row{
-
              //Header
              Box(modifier = Modifier.fillMaxWidth()
              ){
@@ -68,122 +66,126 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                     .clickable(onClick = {navController.popBackStack()})
                     )
 
-                    Text("You Vibe \uD83E\uDD0D",
+                    Text("You Mood \uD83D\uDE0E",
                     modifier = Modifier.align(Alignment.Center),
                     fontSize = 25.sp,
-                    fontFamily = fontFamily)
+                    fontFamily = fontFamily,
+                        fontWeight = FontWeight.SemiBold)
                }
 
              }
 
             //Content
-             Box(Modifier.fillMaxSize()
-                .background(color = when(moodEntry?.mood?.name){
-                "Amazing" -> Color.Green.copy(alpha = 0.3f)
-                "Good" -> SkyBlue.copy(alpha = 0.3f)
-                "Okay" -> Color.Yellow.copy(alpha = 0.3f)
-                "Bad" -> Orange.copy(alpha = 0.3f)
-                "Terrible" -> Color.Red.copy(alpha = 0.3f)
-                else -> Color.White.copy(alpha = 0.3f)
-                })){
+             Box(modifier = Modifier.fillMaxSize()){
 
-                    LazyColumn(modifier = Modifier.align(alignment = Alignment.Center)
-                        .padding(top = 40.dp)
-                        ){
-                        item {
-                            Box(modifier = Modifier.fillMaxWidth()){
-                                //Mood Name
-                                Text(text = moodEntry?.mood?.name ?: "Unknown",
-                                    modifier = Modifier.align(alignment = Alignment.Center),
-                                    fontSize = 40.sp,
-                                    fontFamily = fontFamily)
-                            }
-                        }
+                 Card(Modifier.padding(horizontal = 20.dp)
+                     .heightIn(min = 700.dp),
+                     colors = CardDefaults.cardColors(when(moodEntry?.mood?.name){
+                         "Amazing" -> Color.Green.copy(alpha = 0.3f)
+                         "Good" -> SkyBlue.copy(alpha = 0.3f)
+                         "Okay" -> Color.Yellow.copy(alpha = 0.3f)
+                         "Bad" -> Orange.copy(alpha = 0.3f)
+                         "Terrible" -> Color.Red.copy(alpha = 0.3f)
+                         else -> Color.White.copy(alpha = 0.3f)
+                     })){
 
-                        item {
-                            //Mood Emoji
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                Text(
-                                    text = moodEntry?.mood?.emoji ?: "Unknown", fontSize = 100.sp,
-                                    modifier = Modifier.align(alignment = Alignment.Center)
-                                        .shadow(
-                                            elevation = 20.dp,
-                                            shape = RoundedCornerShape(100.dp),
-                                        )
-                                )
-                            }
-                        }
+                     LazyColumn(modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                         .padding(top = 40.dp)
+                     ){
+                         item {
+                             Box(modifier = Modifier.fillMaxWidth()){
+                                 //Mood Name
+                                 Text(text = moodEntry?.mood?.name ?: "Unknown",
+                                     modifier = Modifier.align(alignment = Alignment.Center),
+                                     fontSize = 40.sp,
+                                     fontFamily = fontFamily)
+                             }
+                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
+                         item {
+                             //Mood Emoji
+                             Box(modifier = Modifier.fillMaxWidth()) {
+                                 Text(
+                                     text = moodEntry?.mood?.emoji ?: "Unknown", fontSize = 100.sp,
+                                     modifier = Modifier.align(alignment = Alignment.Center)
+                                         .shadow(
+                                             elevation = 20.dp,
+                                             shape = RoundedCornerShape(100.dp),
+                                         )
+                                 )
+                             }
+                         }
 
-                        item {
-                            //Images
-                            val imageList = moodEntry?.imageList ?: emptyList()
+                         item {
+                             Spacer(modifier = Modifier.height(10.dp))
+                         }
 
-                            if(imageList.size == 1){
-                                Row(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 10.dp),
-                                    horizontalArrangement = Arrangement.Center
-                                ){
-                                    Card {
-                                        AsyncImage(
-                                            model = imageList[0],
-                                            contentDescription = null,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Fit
-                                        )
-                                    }
-                                }
-                            }
+                         item {
+                             //Images
+                             val imageList = moodEntry?.imageList ?: emptyList()
 
-                            else if (imageList.size > 1){
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 10.dp),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ){
-                                    moodEntry?.imageList?.forEach {
-                                            images ->
-                                        Card(modifier = Modifier
-                                            .size(180.dp)
-                                            .padding(5.dp)
-                                            .clip(RoundedCornerShape(16.dp)),
-                                            shape = RoundedCornerShape(16.dp),
-                                            colors = CardDefaults.cardColors(Color.Transparent)
-                                        ) {
-                                            AsyncImage(
-                                                model = images,
-                                                contentDescription = null,
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentScale = ContentScale.Fit
-                                            )
-                                        }
+                             if(imageList.size == 1){
+                                 Row(modifier = Modifier
+                                     .fillMaxWidth()
+                                     .padding(horizontal = 10.dp),
+                                     horizontalArrangement = Arrangement.Center
+                                 ){
+                                     Card {
+                                         AsyncImage(
+                                             model = imageList[0],
+                                             contentDescription = null,
+                                             modifier = Modifier.fillMaxSize(),
+                                             contentScale = ContentScale.Fit
+                                         )
+                                     }
+                                 }
+                             }
 
-                                    }
-                                }
-                            }
-                        }
+                             else if (imageList.size > 1){
+                                 Row(
+                                     modifier = Modifier
+                                         .fillMaxWidth(),
+                                     horizontalArrangement = Arrangement.spacedBy(0.dp)
+                                 ){
+                                     moodEntry?.imageList?.forEach {
+                                             images ->
+                                         Card(modifier = Modifier
+                                             .size(160.dp)
+                                             .clip(RoundedCornerShape(16.dp)),
+                                             shape = RoundedCornerShape(16.dp),
+                                             colors = CardDefaults.cardColors(Color.Transparent)
+                                         ) {
+                                             AsyncImage(
+                                                 model = images,
+                                                 contentDescription = null,
+                                                 modifier = Modifier.fillMaxSize(),
+                                                 contentScale = ContentScale.Fit
+                                             )
+                                         }
 
-                        item {
-                            //Note
-                            Card(modifier = Modifier.fillMaxWidth()
-                                .align(alignment = Alignment.Center)
-                                .padding(horizontal = 30.dp, vertical = 20.dp)
-                                .defaultMinSize(minHeight = 100.dp),
-                                colors = CardDefaults.cardColors(DarkBlue)) {
+                                     }
+                                 }
+                             }
+                         }
 
-                                Text(text = moodEntry?.note.toString(),
-                                    modifier = Modifier.padding(15.dp),
-                                    fontFamily = fontFamily,
-                                    fontSize = 18.sp,
-                                    color = Color.White)
-                            }
-                        }
-                    }
+                         item {
+                             //Note
+                             Card(modifier = Modifier.fillMaxWidth()
+                                 .align(alignment = Alignment.CenterHorizontally)
+                                 .padding(horizontal = 30.dp, vertical = 20.dp)
+                                 .defaultMinSize(minHeight = 100.dp),
+                                 colors = CardDefaults.cardColors(DarkBlue)) {
+
+                                 Text(text = moodEntry?.note.toString(),
+                                     modifier = Modifier.padding(15.dp),
+                                     fontFamily = fontFamily,
+                                     fontSize = 18.sp,
+                                     color = Color.White)
+                             }
+                         }
+                     }
+                 }
+
              }
        }
 }

@@ -3,6 +3,10 @@ package com.example.vibebook_yourdailymoodjournal
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,11 +15,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,12 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vibebook_yourdailymoodjournal.Data.MoodDatabase
-import com.example.vibebook_yourdailymoodjournal.Data.MoodEntry
 import com.example.vibebook_yourdailymoodjournal.Screens.AddMoods
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodList
 import com.example.vibebook_yourdailymoodjournal.Screens.MoodStats
@@ -46,9 +47,27 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen().apply {
+            // You can set a custom exit animation for splash screen here
+            setOnExitAnimationListener { splashScreenView ->
+                // Here, the splash screen icon fades out before transitioning to the app's UI
+                splashScreenView.iconView.animate().alpha(0f).withEndAction {
+                    splashScreenView.remove()
+                }
+            }
+        }
+
+        setTheme(R.style.Theme_VibeBookYourDailyMoodJournal)
+
         enableEdgeToEdge()
+
         val moodDatabase = MoodDatabase.getDatabase(applicationContext)
         val moodViewModel = MoodViewModel(moodDatabase.moodDao())
+
+
+
+
 
      setContent {
          val navController = rememberNavController()
