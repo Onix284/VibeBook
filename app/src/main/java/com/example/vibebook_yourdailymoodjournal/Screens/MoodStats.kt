@@ -60,7 +60,7 @@ fun MoodStats(moodViewModel: MoodViewModel){
         MoodEmoji.Terrible to Color.Red
     )
 
-    LazyColumn {
+    LazyColumn{
 
 
        item {

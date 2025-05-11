@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.FilterFrames
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
 
+//Screen Manager For Bottom Navigation Bar
 sealed class Screen(val route : String, val title : String, val icon : ImageVector) {
     object MoodList : Screen("MoodList", "Home", Icons.Default.Home)
     object MoodStats : Screen("MoodStats", "Stats", Icons.Default.BarChart)

@@ -16,16 +16,17 @@ import kotlinx.coroutines.launch
 
 class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
 
+    //Mood Response
     private val _moodEntries = MutableStateFlow<List<MoodEntry>>(emptyList())
     val moodEntries: StateFlow<List<MoodEntry>> = _moodEntries
 
 
-    //Quotes Value
+    //Quotes Response
     private val _quotes = MutableStateFlow<List<QuotesResponseItem>>(emptyList())
     val quotes : StateFlow<List<QuotesResponseItem>> = _quotes
 
 
-
+    //Quotes Screen State
     private val _state = MutableStateFlow(
         QuoteState(
             isLoading = false,
@@ -36,10 +37,12 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
 
     val state =_state.asStateFlow()
 
+    //Load All Moods On Home Screen
     init {
         loadMoodEntries()
     }
 
+    //Adds New Mood to The Database
     fun addMoodEntry(entry: MoodEntry){
         viewModelScope.launch {
             moodDao.insertMood(entry)
@@ -47,6 +50,7 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
         }
     }
 
+    //Deletes Existing Mood From The Database
     fun deleteMood(entry: MoodEntry){
         viewModelScope.launch {
             moodDao.deleteMood(entry)
@@ -54,6 +58,7 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
         }
     }
 
+    //Get Specific Mood By ID For ViewMood Details Screen
     fun getMood(id: Int) : Flow<MoodEntry?>{
             return moodDao.getMoodById(id)
     }
@@ -65,13 +70,16 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
         }
     }
 
+    //Get Quote From Ktor Client
     fun getQuote(){
         viewModelScope.launch {
 
+            //Loading
             _state.update {
                 it.copy(isLoading = true, error = null)
             }
 
+            //Store API Response to Response
             try {
                 val response = GetQuotes()
 
@@ -91,6 +99,7 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
                     Log.d("QuoteError", "No quotes found")
                 }
             }
+            // Throw Exception
             catch (e : Exception){
                 _state.update {
                     it.copy(isLoading = false, error = e.message)
@@ -100,6 +109,7 @@ class MoodViewModel(private val  moodDao: MoodDao) : ViewModel() {
     }
 }
 
+//Quote State Manager Data Class
 data class QuoteState(
     val isLoading: Boolean = false,
     val quoteResponse : QuotesResponseItem? = null,

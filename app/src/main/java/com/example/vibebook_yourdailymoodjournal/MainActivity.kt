@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
          val currentBackStack by navController.currentBackStackEntryAsState()
          val currentDestination = currentBackStack?.destination?.route
 
+         //Bottom Navigation Bar
              Scaffold(
                  bottomBar = {
                          BottomNavigation(elevation = 8.dp,
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
                  }
              ) { innerPadding ->
                  NavHost(
+                     //Nav Controller For Navigation
                      navController = navController,
                      startDestination = Screen.MoodList.route,
                      modifier = Modifier.padding(innerPadding)

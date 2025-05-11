@@ -119,6 +119,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                         }
 
                         item {
+                            //Images
                             val imageList = moodEntry?.imageList ?: emptyList()
 
                             if(imageList.size == 1){
@@ -168,6 +169,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                         }
 
                         item {
+                            //Note
                             Card(modifier = Modifier.fillMaxWidth()
                                 .align(alignment = Alignment.Center)
                                 .padding(horizontal = 30.dp, vertical = 20.dp)

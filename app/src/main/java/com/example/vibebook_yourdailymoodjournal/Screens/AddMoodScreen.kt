@@ -96,7 +96,7 @@ fun AddMoods(navController: NavController, moodViewModel: MoodViewModel){
     var description by remember { mutableStateOf("") } //Note For Mood
     var selectedMood by remember { mutableStateOf<MoodEmoji?>(null) } //Select Mood Emoji
     var selectedDate: LocalDate? by remember { mutableStateOf<LocalDate?>(null) }//Selected Date
-    var selectedTime: LocalTime? by remember { mutableStateOf<LocalTime?>(null) } // Selected Time
+    var selectedTime: LocalTime? by remember { mutableStateOf(LocalTime.now()) } // Selected Time
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     val context = LocalContext.current
 
@@ -549,7 +549,7 @@ fun DateTimePickerSection(
                 .width(145.dp)
                 .weight(0.5f),
                 onClick = {
-                DatePickerDialog(
+                val datePicker = DatePickerDialog(
                     context,
                     { _, dayOfMonth, month, year ->
                         val pickedDate = LocalDate.of(dayOfMonth, month + 1, year)
@@ -558,7 +558,9 @@ fun DateTimePickerSection(
                     today.year,
                     today.monthValue - 1,
                     today.dayOfMonth
-                ).show()
+                )
+                    datePicker.datePicker.maxDate = System.currentTimeMillis()
+                    datePicker.show()
             },
                 colors = CardDefaults.cardColors(
                     containerColor = DarkBlue
@@ -603,7 +605,14 @@ fun DateTimePickerSection(
                     context,
                     { _, hour, minute ->
                         val pickedTime = LocalTime.of(hour, minute)
-                        onTimeSelected(pickedTime)
+                        if(pickedTime <= now){
+                            onTimeSelected(pickedTime)
+                        }
+                        else
+                        {
+                            FancyToast.makeText(context, "Select Correct Time", FancyToast.LENGTH_SHORT,
+                                FancyToast.WARNING, true).show()
+                        }
                     },
                     now.hour,
                     now.minute,

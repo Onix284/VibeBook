@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
 
 object KtorClient{
 
+    //Http Client
     val okHttpClient : HttpClient by lazy{
         HttpClient(OkHttp){
 
@@ -38,6 +39,7 @@ object KtorClient{
     }
 }
 
+//Get Quotes From Response JSON
 suspend fun GetQuotes(): List<QuotesResponseItem> {
      val response : List<QuotesResponseItem> = okHttpClient.get("https://zenquotes.io/api/random").body()
      return response
