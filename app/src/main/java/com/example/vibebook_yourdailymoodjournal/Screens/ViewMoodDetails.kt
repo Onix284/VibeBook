@@ -122,7 +122,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
 
                          item {
                              //Images
-                             val imageList = moodEntry?.imageList ?: emptyList()
+                             val imageList = moodEntry?.imageList?: emptyList()
 
                              if(imageList.size == 1){
                                  Row(modifier = Modifier
@@ -145,7 +145,7 @@ fun ViewMoodDetails(navController: NavController, moodViewModel: MoodViewModel, 
                                  Row(
                                      modifier = Modifier
                                          .fillMaxWidth(),
-                                     horizontalArrangement = Arrangement.spacedBy(0.dp)
+                                     horizontalArrangement = Arrangement.Center
                                  ){
                                      moodEntry?.imageList?.forEach {
                                              images ->
